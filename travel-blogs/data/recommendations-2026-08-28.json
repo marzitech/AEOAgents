@@ -1,0 +1,24 @@
+{
+  "ts": "2026-08-28T16:48:49.517817+00:00",
+  "brand_url": "https://holidays.marzi.life",
+  "inventory_size": 13,
+  "recommendations": [
+    {
+      "topic": "Ladakh for Indian Seniors: Managing Altitude, Health & Adventure with Marzi Holidays",
+      "rationale": "This targets a challenging yet popular domestic destination offered by Marzi, providing critical health and safety guidance specific to seniors and high-altitude travel.",
+      "target_category": "informational",
+      "expected_intent": "Ladakh for seniors, high altitude travel India seniors, senior adventure Ladakh, health tips Ladakh",
+      "priority_score": 0.95,
+      "topic_type": "trip_specific",
+      "themes_addressed": [
+        "Ladakh",
+        "altitude",
+        "health",
+        "adventure",
+        "safety"
+      ],
+      "max_similarity_to_existing": 0.608,
+      "closest_existing_slug": "marzi-holidays-best-flight-seats-for-indian-seniors-on-long-international-journe"
+    }
+  ]
+}
