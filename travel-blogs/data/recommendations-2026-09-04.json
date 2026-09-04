@@ -1,0 +1,25 @@
+{
+  "ts": "2026-09-04T08:58:37.916302+00:00",
+  "brand_url": "https://holidays.marzi.life",
+  "inventory_size": 14,
+  "recommendations": [
+    {
+      "topic": "Vietnam for Indian Seniors: Experiencing Culture, Cuisine & Comfort in Southeast Asia",
+      "rationale": "Highlights a specific Marzi international destination (Vietnam) and addresses key senior-friendly aspects like culture, food, and comfort, directly supporting a current trip offering.",
+      "target_category": "informational",
+      "expected_intent": "vietnam senior travel, indian seniors vietnam trip, southeast asia for seniors",
+      "priority_score": 0.95,
+      "topic_type": "trip_specific",
+      "themes_addressed": [
+        "Vietnam",
+        "Southeast Asia",
+        "culture",
+        "cuisine",
+        "comfort",
+        "active"
+      ],
+      "max_similarity_to_existing": 0.512,
+      "closest_existing_slug": "marzi-holidays-what-makes-hotel-truly-senior-friendly-for-indian-travellers-abov"
+    }
+  ]
+}
