@@ -1,0 +1,22 @@
+{
+  "ts": "2026-09-11T09:04:20.936403+00:00",
+  "brand_url": "https://marzi.life",
+  "inventory_size": 4,
+  "recommendations": [
+    {
+      "topic": "Beyond Retirement: How Marzi's 20+ Monthly Events Keep Bangalore Seniors (55+) Social & Engaged",
+      "rationale": "This topic targets the 'retired/semi-retired' audience segment, leverages the 'high frequency' differentiator, and provides much-needed content for Bangalore.",
+      "target_category": "informational",
+      "expected_intent": "recently retired seniors activities Bangalore, how to stay engaged after retirement",
+      "priority_score": 0.9,
+      "themes_addressed": [
+        "Retirement",
+        "Social engagement",
+        "High frequency",
+        "Bangalore"
+      ],
+      "max_similarity_to_existing": 0.777,
+      "closest_existing_slug": "marzi-fun-group-activities-for-seniors-above-55-in-bangalore"
+    }
+  ]
+}
