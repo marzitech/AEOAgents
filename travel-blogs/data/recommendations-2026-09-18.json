@@ -1,0 +1,23 @@
+{
+  "ts": "2026-09-18T09:08:29.524761+00:00",
+  "brand_url": "https://holidays.marzi.life",
+  "inventory_size": 16,
+  "recommendations": [
+    {
+      "topic": "Airport Navigation for Indian Seniors: A Stress-Free Guide to Boarding, Transfers & Baggage Claim",
+      "rationale": "Addresses a common logistical anxiety for seniors, providing practical, step-by-step 'how-to' advice for a smoother travel experience, filling a key 'how-to' content gap.",
+      "target_category": "how-to",
+      "expected_intent": "airport assistance for seniors India, how to navigate airports elderly, senior travel airport tips",
+      "priority_score": 0.9,
+      "topic_type": "general",
+      "themes_addressed": [
+        "logistics",
+        "convenience",
+        "independence",
+        "stress reduction"
+      ],
+      "max_similarity_to_existing": 0.657,
+      "closest_existing_slug": "marzi-holidays-best-flight-seats-for-indian-seniors-on-long-international-journe"
+    }
+  ]
+}
