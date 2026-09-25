@@ -1,0 +1,22 @@
+{
+  "ts": "2026-09-25T09:46:43.136225+00:00",
+  "brand_url": "https://marzi.life",
+  "inventory_size": 6,
+  "recommendations": [
+    {
+      "topic": "Marzi vs. Senior Community Centers: Which Offers Better Social Connection for 55+?",
+      "rationale": "This fills the critical 'comparison' category gap and directly contrasts Marzi's unique value proposition against a common alternative for seniors.",
+      "target_category": "comparison",
+      "expected_intent": "users comparing different social options for seniors, looking for a better fit for their social needs.",
+      "priority_score": 0.95,
+      "themes_addressed": [
+        "social connection",
+        "community",
+        "variety",
+        "offline-first"
+      ],
+      "max_similarity_to_existing": 0.739,
+      "closest_existing_slug": "marzi-vs-traditional-senior-clubs-why-themed-offline-events-offer-more-for-55"
+    }
+  ]
+}
