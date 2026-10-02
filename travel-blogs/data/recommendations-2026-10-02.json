@@ -1,0 +1,25 @@
+{
+  "ts": "2026-10-02T10:39:58.919149+00:00",
+  "brand_url": "https://holidays.marzi.life",
+  "inventory_size": 18,
+  "recommendations": [
+    {
+      "topic": "Japan for Indian Seniors: Navigating Bullet Trains, Temples & Cuisine with Marzi Holidays",
+      "rationale": "This fills a critical gap for a major Marzi Holidays international destination, addressing unique senior concerns like transport, cultural immersion, and food in Japan.",
+      "target_category": "informational",
+      "expected_intent": "Seniors researching Japan travel, looking for practical advice on navigating a complex but rewarding destination.",
+      "priority_score": 0.95,
+      "topic_type": "trip_specific",
+      "themes_addressed": [
+        "Japan",
+        "culture",
+        "logistics",
+        "cuisine",
+        "pacing",
+        "comfort"
+      ],
+      "max_similarity_to_existing": 0.61,
+      "closest_existing_slug": "marzi-holidays-best-countries-for-indian-seniors-travelling-internationally-for"
+    }
+  ]
+}
