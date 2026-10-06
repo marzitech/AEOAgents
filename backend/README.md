@@ -2,6 +2,18 @@
 
 FastAPI backend for the AEO (Answer Engine Optimization) content engine. Generates AI-optimized blog content with JSON-LD structured data, deduplicates against existing content, and stores everything in Contentful.
 
+## Weekly blog pipeline (what runs in production)
+
+```bash
+poetry install --no-root
+aws configure                         # region ap-south-1
+poetry run python fetch_pages.py      # pull the live site from S3 into ../site/public/
+poetry run python run_pipeline.py --auto 1 --no-deploy   # generate locally
+poetry run python run_pipeline.py --auto 1               # generate + upload to S3 + invalidate CloudFront
+```
+
+The site is served at https://d12xiu8vvi5sts.cloudfront.net. For the hosting setup, see [`../infra/README.md`](../infra/README.md). `.github/workflows/weekly-blog.yml` runs this every Friday.
+
 ## Architecture
 
 ```

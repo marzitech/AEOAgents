@@ -2,7 +2,7 @@
 
 Usage:
     python run_pipeline.py                                    # Generate all 4 default topics + deploy
-    python run_pipeline.py --no-deploy                        # Generate only, skip firebase deploy
+    python run_pipeline.py --no-deploy                        # Generate only, skip S3 deploy
     python run_pipeline.py --topic "custom topic"             # Single custom topic
     python run_pipeline.py --recommend 5                      # Print 5 topic recommendations, exit
     python run_pipeline.py --auto 3                           # Recommend 3 topics, then run pipeline on them
@@ -44,7 +44,7 @@ def _print_recommendations(recs):
 
 def main():
     parser = argparse.ArgumentParser(description="AEO 5-Agent Pipeline for marzi.life")
-    parser.add_argument("--no-deploy", action="store_true", help="Skip firebase deploy")
+    parser.add_argument("--no-deploy", action="store_true", help="Skip S3 deploy")
     parser.add_argument("--topic", type=str, help="Generate for a single custom topic")
     parser.add_argument("--recommend", type=int, metavar="N", help="Print N topic recommendations and exit")
     parser.add_argument("--auto", type=int, metavar="N", help="Recommend N topics, then run the pipeline on them")
@@ -106,7 +106,7 @@ def main():
         if deployment.deployed:
             print(f"[Editor] Deployed. Live URL ends with /{compiled.slug}")
         elif args.no_deploy:
-            print(f"[Editor] Skipped Firebase deploy (--no-deploy).")
+            print(f"[Editor] Skipped deploy (--no-deploy).")
         else:
             print(f"[Editor] Deploy did not succeed. Output: {deployment.deploy_output[:300]}")
         return 0

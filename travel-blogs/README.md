@@ -1,6 +1,6 @@
 # Marzi Travel Blogs
 
-AEO (Answer Engine Optimization) content engine for **Marzi Holidays** — generates senior-first travel guides for active Indian travellers aged 50+, hosts them on Firebase (`marzitravelblogs.web.app`), and keeps an accumulating sitemap + `llms.txt` so AI crawlers (ChatGPT, Perplexity, Gemini, Google AI Overviews) can index them.
+AEO (Answer Engine Optimization) content engine for **Marzi Holidays** — generates senior-first travel guides for active Indian travellers aged 50+, hosts them on AWS S3 + CloudFront (`https://d3hytixpi5dxhx.cloudfront.net`), and keeps an accumulating sitemap + `llms.txt` so AI crawlers (ChatGPT, Perplexity, Gemini, Google AI Overviews) can index them.
 
 This module sits on top of the brand-agnostic backend agents under `../backend/app/agents/`. It reuses backend code unchanged and only overrides the travel-specific bits (researcher prompt, strategist category routing, distributor copy, brand context, hero image generation).
 
@@ -16,18 +16,19 @@ Writer            (Gemini 2.5 Flash, Bootstrap-5 HTML, JSON-LD)
 Compiler          (wraps in site template, writes <slug>.html)
         ↓
 TravelDistributor (rebuilds index.html / sitemap.xml / llms.txt / robots.txt,
-                   discovers existing pages on disk, deploys to Firebase)
+                   discovers existing pages on disk, deploys to S3 + CloudFront)
 ```
 
-Output lands in `firebase-hosting/public/` and is served at `https://marzitravelblogs.web.app`.
+Output lands in `site/public/` and is served at `https://d3hytixpi5dxhx.cloudfront.net`. Hosting setup: [`../infra/README.md`](../infra/README.md).
 
 ## Prerequisites
 
 - Python 3.11+ with `backend/requirements.txt` installed
-- `firebase-tools` CLI installed and logged in (`npm i -g firebase-tools && firebase login`)
+- AWS CLI installed and configured (`brew install awscli && aws configure`, region `ap-south-1`)
 - `backend/.env` populated with at minimum:
   - `GEMINI_API_KEY=...`
-- The Firebase project `marzitravelblogs` accessible to your account
+- Access to the `aeo-marzi-travel-904233100956` S3 bucket
+- Before generating, pull the live site so dedup sees every page: `poetry -C backend run python "$PWD/travel-blogs/fetch_travel_pages.py"`
 
 ## Common commands
 
@@ -76,7 +77,7 @@ python travel-blogs/run_travel_pipeline.py -v --destination "..."
 
 ## Deploy-only (no regeneration)
 
-If you only want to rebuild `index.html` / `sitemap.xml` / `llms.txt` from whatever HTML files already exist on disk and push to Firebase:
+If you only want to rebuild `index.html` / `sitemap.xml` / `llms.txt` from whatever HTML files already exist on disk and push to S3:
 
 ```bash
 PYTHONPATH=backend:travel-blogs python -c "
@@ -89,11 +90,6 @@ TravelDistributorAgent(output_dir=site_config.OUTPUT_DIR).run([], deploy=True)
 
 This is useful after editing distributor templates or hand-tweaking an HTML file.
 
-If Firebase CLI 15.x hits the TLS circular-JSON bug, force serial upload:
-```bash
-cd travel-blogs/firebase-hosting
-FIREBASE_HOSTING_UPLOAD_CONCURRENCY=1 firebase deploy --only hosting --project marzitravelblogs
-```
 
 ## Editorial stance (built into the agents)
 
@@ -123,8 +119,7 @@ The `apply_to_settings()` call at CLI startup mutates the backend's `app.config.
 
 ```
 travel-blogs/
-├── firebase-hosting/
-│   ├── firebase.json
+├── site/
 │   └── public/
 │       ├── index.html              # auto-generated landing page (card list)
 │       ├── sitemap.xml             # accumulates every live page
@@ -140,15 +135,15 @@ The Distributor scans `public/*.html` on every run and merges discovered pages w
 
 ## Troubleshooting
 
-- **`firebase: command not found`** — install with `npm install -g firebase-tools` and run `firebase login`.
-- **Firebase deploy hangs / TLS circular-JSON error** — set `FIREBASE_HOSTING_UPLOAD_CONCURRENCY=1`.
+- **`aws: command not found`** — `brew install awscli`, then `aws configure`.
+- **Deploy fails with `AccessDenied` / `NoCredentials`** — run `aws sts get-caller-identity` to check which credentials are active.
 - **Writer fails with `JSONDecodeError`** — the Writer retries 3× and has a lenient fallback parser. If all three fail, re-run; Gemini occasionally returns malformed JSON on long HTML payloads.
 - **Module not found `app.*` or `marzi_travel.*`** — `run_travel_pipeline.py` adds both to `sys.path` automatically, but if you invoke things by hand set `PYTHONPATH=backend:travel-blogs`.
 - **Edits to `.py` files aren't reflected** — Python caches imported modules; restart the CLI after editing any agent.
 
 ## Live URLs
 
-- Landing page: https://marzitravelblogs.web.app
-- Sitemap: https://marzitravelblogs.web.app/sitemap.xml
-- AI-crawler manifest: https://marzitravelblogs.web.app/llms.txt
-- Robots: https://marzitravelblogs.web.app/robots.txt
+- Landing page: https://d3hytixpi5dxhx.cloudfront.net
+- Sitemap: https://d3hytixpi5dxhx.cloudfront.net/sitemap.xml
+- AI-crawler manifest: https://d3hytixpi5dxhx.cloudfront.net/llms.txt
+- Robots: https://d3hytixpi5dxhx.cloudfront.net/robots.txt

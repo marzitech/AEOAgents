@@ -45,8 +45,8 @@ class PipelineConfig:
     brand_url: str = "https://marzi.life"
 
     # Output control
-    output_dir: str | Path | None = None   # None = default firebase-hosting/public/
-    deploy: bool = True                     # Whether to run firebase deploy
+    output_dir: str | Path | None = None   # None = default site/public/
+    deploy: bool = True                     # Whether to upload to S3 + CloudFront
 
     # Convenience: pass raw topic strings (auto-creates TopicConfig with no category override)
     raw_topics: list[str] = field(default_factory=list)
@@ -76,7 +76,7 @@ async def run_pipeline(config: PipelineConfig) -> PipelineResult:
             3. Writer      → WrittenContent
             4. Compiler    → CompiledPage (HTML file written)
         Then once:
-            5. Distributor → index + sitemap + robots + firebase deploy
+            5. Distributor → index + sitemap + robots + S3 deploy
 
     Args:
         config: Pipeline configuration
@@ -142,6 +142,8 @@ async def run_pipeline(config: PipelineConfig) -> PipelineResult:
             deployment = distributor.run(result.pages, deploy=config.deploy)
             result.deployment = deployment
             _log_distributor_result(deployment, requested_deploy=config.deploy)
+            if config.deploy and not deployment.deployed:
+                result.errors.append(f"Deploy failed: {deployment.deploy_output[-300:]}")
         except Exception as e:
             error_msg = f"Distribution failed: {e}"
             logger.error(f"[Pipeline] ✗ {error_msg}")

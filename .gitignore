@@ -36,3 +36,9 @@ docker-compose.override.yml
 # ChromaDB — rebuilt each run
 backend/data/chroma/
 travel-blogs/data/chroma/
+
+# Generated sites — S3 is the source of truth (pulled by fetch_pages.py before each run)
+site/public/*
+!site/public/.gitkeep
+travel-blogs/site/public/*
+!travel-blogs/site/public/.gitkeep

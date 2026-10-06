@@ -12,6 +12,7 @@ from bs4 import BeautifulSoup
 from google import genai
 
 from app.config import settings
+from app.services.gemini import gemini_client
 from app.schemas.content import (
     ContentCategory,
     GenerateRequest,
@@ -451,9 +452,9 @@ async def generate_content(request: GenerateRequest) -> GenerateResponse:
     prompt = _build_prompt(request, brand_data)
 
     # Step 3: Call Gemini API
-    client = genai.Client(api_key=settings.gemini_api_key)
+    client = gemini_client()
     response = client.models.generate_content(
-        model="gemini-2.5-flash",
+        model=settings.gemini_model,
         contents=prompt,
         config=genai.types.GenerateContentConfig(
             temperature=0.7,

@@ -3,10 +3,10 @@
 Subclasses backend `DistributorAgent` and overrides only the two methods
 whose copy is brand-specific: `_update_index` and `_generate_llms_txt`.
 
-Sitemap, robots.txt, page discovery (across runs), and the firebase deploy
-flow are all inherited unchanged. The deploy correctly targets the travel
-Firebase site because `firebase_root = output_dir.parent` resolves to
-`travel-blogs/firebase-hosting/`, which has its own `firebase.json` + `.firebaserc`.
+Sitemap, robots.txt, page discovery (across runs), and the S3 + CloudFront
+deploy are all inherited unchanged. The deploy targets the travel bucket
+because `site_config.apply_to_settings()` points `settings.s3_bucket` /
+`settings.cloudfront_distribution_id` at the aeo-marzi-travel stack.
 """
 
 from __future__ import annotations
@@ -116,7 +116,7 @@ def _build_travel_index_html(pages: list[CompiledPage]) -> str:
     <!-- End Google Tag Manager -->
     <title>{escape(site_config.SITE_NAME)}</title>
     <meta name="description" content="{escape(subtitle)}">
-    <meta name="robots" content="index, follow">
+    <meta name="robots" content="noindex, nofollow">
     <link rel="canonical" href="{site_config.SITE_URL}/">
     <link rel="sitemap" type="application/xml" href="{site_config.SITE_URL}/sitemap.xml">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -151,7 +151,7 @@ def _build_travel_index_html(pages: list[CompiledPage]) -> str:
 class TravelDistributorAgent(DistributorAgent):
     """Distributor with Marzi Holidays copy in index.html + llms.txt.
 
-    Inherits sitemap.xml, robots.txt, page-discovery, and Firebase deploy
+    Inherits sitemap.xml, robots.txt, page-discovery, and S3 deploy
     behavior from the parent. Backend is not modified.
     """
 

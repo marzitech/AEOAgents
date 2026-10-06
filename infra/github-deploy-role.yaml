@@ -1,0 +1,65 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  IAM role GitHub Actions assumes via OIDC (no long-lived keys) to deploy the
+  AEO blogs. Scoped to the two site buckets + their CloudFront distributions.
+
+Parameters:
+  GitHubRepo:
+    Type: String
+    Default: marzitech/AEOAgents
+  Branch:
+    Type: String
+    Default: main
+  LifeStack:
+    Type: String
+    Default: aeo-marzi-life
+  TravelStack:
+    Type: String
+    Default: aeo-marzi-travel
+  LifeDistributionId:
+    Type: String
+    Default: E321IIF074LQON
+  TravelDistributionId:
+    Type: String
+    Default: E3UQ12NFR1INK9
+
+Resources:
+  DeployRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: aeo-blog-github-deploy
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !Sub "arn:aws:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com"
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+                token.actions.githubusercontent.com:sub: !Sub "repo:${GitHubRepo}:ref:refs/heads/${Branch}"
+      Policies:
+        - PolicyName: deploy-blogs
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: s3:ListBucket
+                Resource:
+                  - !Sub "arn:aws:s3:::${LifeStack}-${AWS::AccountId}"
+                  - !Sub "arn:aws:s3:::${TravelStack}-${AWS::AccountId}"
+              - Effect: Allow
+                Action: [s3:GetObject, s3:PutObject]
+                Resource:
+                  - !Sub "arn:aws:s3:::${LifeStack}-${AWS::AccountId}/*"
+                  - !Sub "arn:aws:s3:::${TravelStack}-${AWS::AccountId}/*"
+              - Effect: Allow
+                Action: cloudfront:CreateInvalidation
+                Resource:
+                  - !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${LifeDistributionId}"
+                  - !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${TravelDistributionId}"
+
+Outputs:
+  RoleArn:
+    Value: !GetAtt DeployRole.Arn

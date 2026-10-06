@@ -10,8 +10,8 @@ Usage:
 The pipeline:
   TravelResearcher (Gemini grounded GoogleSearch) → Strategist → Writer → Compiler → TravelDistributor
 
-Output lands in travel-blogs/firebase-hosting/public/ and deploys to the
-MarziTravelBlogs Firebase site.
+Output lands in travel-blogs/site/public/ and deploys to the
+Marzi Travel S3 + CloudFront site.
 """
 
 from __future__ import annotations
@@ -56,7 +56,7 @@ def main() -> int:
     parser.add_argument(
         "--no-deploy",
         action="store_true",
-        help="Skip firebase deploy (write files locally only)",
+        help="Skip S3 deploy (write files locally only)",
     )
     parser.add_argument(
         "--list-blogs",
@@ -167,7 +167,7 @@ def main() -> int:
         if deployment.deployed:
             print(f"[Editor] Deployed. Live URL ends with /{compiled.slug}")
         elif args.no_deploy:
-            print("[Editor] Skipped Firebase deploy (--no-deploy).")
+            print("[Editor] Skipped deploy (--no-deploy).")
         else:
             print(
                 f"[Editor] Deploy did not succeed. "

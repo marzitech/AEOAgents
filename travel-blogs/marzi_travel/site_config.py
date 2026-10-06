@@ -14,11 +14,11 @@ from pathlib import Path
 
 
 # ── Hosting ──
-# Firebase project number 913905852266 (project: MarziTravelBlogs).
-FIREBASE_PROJECT_ID = "marzitravelblogs"
-FIREBASE_PROJECT_NUMBER = "913905852266"
+# AWS S3 + CloudFront (stack: infra/static-site.yaml, aeo-marzi-travel).
+S3_BUCKET = "aeo-marzi-travel-904233100956"
+CLOUDFRONT_DISTRIBUTION_ID = "E3UQ12NFR1INK9"
 
-SITE_URL = "https://marzitravelblogs.web.app"
+SITE_URL = "https://d3hytixpi5dxhx.cloudfront.net"
 SITE_NAME = "Marzi Travel Blog"
 ORGANIZATION_NAME = "Marzi Holidays"
 DEFAULT_AUTHOR = "Marzi Holidays"
@@ -28,7 +28,7 @@ BRAND_FOOTER_URL = "https://holidays.marzi.life"
 # ── Paths ──
 _TRAVEL_ROOT = Path(__file__).resolve().parents[1]   # travel-blogs/
 PROJECT_ROOT = _TRAVEL_ROOT.parent                   # AEOAgents/
-OUTPUT_DIR = _TRAVEL_ROOT / "firebase-hosting" / "public"
+OUTPUT_DIR = _TRAVEL_ROOT / "site" / "public"
 DATA_DIR = _TRAVEL_ROOT / "data"
 
 # ── Display copy (read directly by TravelDistributorAgent) ──
@@ -79,7 +79,7 @@ def apply_to_settings() -> None:
 
     Backend reads `settings.site_url`, `settings.site_name`, `settings.organization_name`,
     `settings.default_author` for canonical URLs, page titles, footer attribution, and
-    sitemap host. Mutating these here keeps backend modules unmodified.
+    sitemap host; `settings.s3_bucket` / `cloudfront_distribution_id` for the deploy target. Mutating these here keeps backend modules unmodified.
     """
     from app.config import settings
 
@@ -87,3 +87,5 @@ def apply_to_settings() -> None:
     settings.site_name = SITE_NAME
     settings.organization_name = ORGANIZATION_NAME
     settings.default_author = DEFAULT_AUTHOR
+    settings.s3_bucket = S3_BUCKET
+    settings.cloudfront_distribution_id = CLOUDFRONT_DISTRIBUTION_ID

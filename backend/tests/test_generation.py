@@ -288,9 +288,9 @@ class TestGenerateContent:
         })
 
         with patch("app.services.generation.scrape_brand_data", new_callable=AsyncMock, return_value=mock_brand), \
-             patch("app.services.generation.genai") as mock_genai:
+             patch("app.services.generation.gemini_client") as mock_gemini_client:
             mock_client = MagicMock()
-            mock_genai.Client.return_value = mock_client
+            mock_gemini_client.return_value = mock_client
             mock_resp = MagicMock()
             mock_resp.text = gemini_response_text
             mock_client.models.generate_content.return_value = mock_resp
@@ -324,9 +324,9 @@ class TestGenerateContent:
         }) + "\n```"
 
         with patch("app.services.generation.scrape_brand_data", new_callable=AsyncMock, return_value=mock_brand), \
-             patch("app.services.generation.genai") as mock_genai:
+             patch("app.services.generation.gemini_client") as mock_gemini_client:
             mock_client = MagicMock()
-            mock_genai.Client.return_value = mock_client
+            mock_gemini_client.return_value = mock_client
             mock_resp = MagicMock()
             mock_resp.text = raw
             mock_client.models.generate_content.return_value = mock_resp
@@ -348,9 +348,9 @@ class TestGenerateContent:
         }
 
         with patch("app.services.generation.scrape_brand_data", new_callable=AsyncMock, return_value=mock_brand), \
-             patch("app.services.generation.genai") as mock_genai:
+             patch("app.services.generation.gemini_client") as mock_gemini_client:
             mock_client = MagicMock()
-            mock_genai.Client.return_value = mock_client
+            mock_gemini_client.return_value = mock_client
             mock_resp = MagicMock()
             mock_resp.text = "not valid json at all"
             mock_client.models.generate_content.return_value = mock_resp

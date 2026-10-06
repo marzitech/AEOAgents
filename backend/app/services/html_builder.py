@@ -593,7 +593,10 @@ def build_full_page(content: GeneratedContent, jsonld: dict | None = None) -> st
 
 
 def build_sitemap(entries: list[dict]) -> str:
-    """Generate a sitemap.xml from a list of published content entries."""
+    """Generate a sitemap.xml from a list of published content entries.
+
+    The homepage is omitted on purpose: index.html is noindex, nofollow.
+    """
     urls = []
     for entry in entries:
         slug = entry.get("slug", "")
@@ -612,11 +615,6 @@ def build_sitemap(entries: list[dict]) -> str:
     urls_xml = "\n".join(urls)
     return f"""<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>{settings.site_url}/</loc>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
-  </url>
 {urls_xml}
 </urlset>"""
 

@@ -21,6 +21,7 @@ from dataclasses import dataclass, field
 from google import genai
 
 from app.config import settings
+from app.services.gemini import gemini_client
 from app.schemas.content import ContentCategory, GeneratedContent
 from app.agents.strategist import ContentBlueprint
 
@@ -261,13 +262,13 @@ class WriterAgent:
         logger.info(f"[Writer] Generating content for slug='{blueprint.slug}'")
 
         prompt = _build_writer_prompt(blueprint)
-        client = genai.Client(api_key=settings.gemini_api_key)
+        client = gemini_client()
 
         parsed: dict | None = None
         last_err: Exception | None = None
         for attempt in (1, 2, 3):
             response = client.models.generate_content(
-                model="gemini-2.5-flash",
+                model=settings.gemini_model,
                 contents=prompt,
                 config=genai.types.GenerateContentConfig(
                     temperature=0.7,
