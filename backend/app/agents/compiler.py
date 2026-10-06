@@ -3,7 +3,7 @@
 Takes WrittenContent from the Writer agent and:
 1. Generates category-specific JSON-LD structured data
 2. Wraps content into the full HTML page template (navbar, hero, sidebar, footer)
-3. Writes the physical .html file to firebase-hosting/public/
+3. Writes the physical .html file to site/public/
 
 Uses existing build_full_page() and generate_jsonld() as its foundation.
 
@@ -22,9 +22,9 @@ from app.agents.writer import WrittenContent
 
 logger = logging.getLogger(__name__)
 
-# Default output directory — firebase-hosting/public/ relative to project root
+# Default output directory — site/public/ relative to project root
 _PROJECT_ROOT = Path(__file__).resolve().parents[3]  # backend/app/agents/ → project root
-DEFAULT_OUTPUT_DIR = _PROJECT_ROOT / "firebase-hosting" / "public"
+DEFAULT_OUTPUT_DIR = _PROJECT_ROOT / "site" / "public"
 
 
 @dataclass
@@ -51,7 +51,7 @@ class CompilerAgent:
     """Agent 4: Static Site Compiler.
 
     Wraps generated content into complete HTML pages and writes them
-    to the firebase-hosting/public/ directory.
+    to the site/public/ directory.
     """
 
     def __init__(self, output_dir: str | Path | None = None):
@@ -62,7 +62,7 @@ class CompilerAgent:
 
         1. Generate JSON-LD structured data
         2. Build complete HTML page
-        3. Write to firebase-hosting/public/{slug}.html
+        3. Write to site/public/{slug}.html
 
         Args:
             written: Content from Agent 3

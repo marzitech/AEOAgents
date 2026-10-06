@@ -2,7 +2,7 @@
 
 Mirrors backend's `app.agents.pipeline.run_pipeline` but instantiates the
 travel-specific Researcher and Distributor, and routes the Compiler output
-to `travel-blogs/firebase-hosting/public/`.
+to `travel-blogs/site/public/`.
 
 Backend's StrategistAgent, WriterAgent, and CompilerAgent are reused as-is —
 they consume a brand-agnostic `ResearchDossier` / `ContentBlueprint` /
@@ -105,6 +105,8 @@ async def run_travel_pipeline(config: TravelPipelineConfig) -> TravelPipelineRes
         try:
             deployment = distributor.run(result.pages, deploy=config.deploy)
             result.deployment = deployment
+            if config.deploy and not deployment.deployed:
+                result.errors.append(f"Deploy failed: {deployment.deploy_output[-300:]}")
         except Exception as e:
             err = f"Distribution failed: {e}"
             logger.error(f"[TravelPipeline] ✗ {err}")

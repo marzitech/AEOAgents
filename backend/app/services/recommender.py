@@ -25,6 +25,7 @@ from bs4 import BeautifulSoup
 from google import genai
 
 from app.config import settings
+from app.services.gemini import gemini_client
 from app.services.brand_context import get_brand_context
 from app.services import vector_store
 from app.agents.distributor import DistributorAgent
@@ -246,9 +247,9 @@ def _llm_recommend(prompt: str) -> list[dict]:
         logger.error("[Recommender] GEMINI_API_KEY not configured")
         return []
     try:
-        client = genai.Client(api_key=settings.gemini_api_key)
+        client = gemini_client()
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model=settings.gemini_model,
             contents=prompt,
             config=genai.types.GenerateContentConfig(
                 temperature=0.7,
@@ -351,7 +352,7 @@ def recommend_topics(
     Args:
         brand_url:             Brand for which to recommend topics.
         n:                     Number of recommendations to return.
-        output_dir:            Override for firebase-hosting/public/. None = default.
+        output_dir:            Override for site/public/. None = default.
         similarity_threshold:  Cosine threshold above which a candidate is considered
                                a duplicate of existing content (range 0.0–1.0).
 

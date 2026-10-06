@@ -108,10 +108,11 @@ class TestBuildSitemap:
         assert "<urlset" in sitemap
         assert "</urlset>" in sitemap
 
-    def test_homepage_always_included(self):
+    def test_homepage_excluded(self):
+        # index.html is noindex, nofollow — it must not be listed in the sitemap.
         sitemap = build_sitemap([])
-        assert "<priority>1.0</priority>" in sitemap
-        assert "https://example.com/" in sitemap
+        assert "<url>" not in sitemap
+        assert "<loc>https://example.com/</loc>" not in sitemap
 
     def test_faq_weekly_priority(self):
         entries = [{"slug": "faq-page", "updated_at": "2024-01-15", "category": "faq"}]
@@ -147,8 +148,8 @@ class TestBuildSitemap:
         assert "page-1" in sitemap
         assert "page-2" in sitemap
         assert "page-3" in sitemap
-        # Homepage + 3 entries = 4 <url> blocks
-        assert sitemap.count("<url>") == 4
+        # 3 entries, no homepage
+        assert sitemap.count("<url>") == 3
 
     def test_loc_uses_site_url(self):
         entries = [{"slug": "my-page", "updated_at": "2024-01-15"}]

@@ -20,6 +20,7 @@ import httpx
 from google import genai
 
 from app.config import settings
+from app.services.gemini import gemini_client
 from app.services.brand_context import get_brand_context
 from app.services.generation import scrape_brand_data
 
@@ -249,9 +250,9 @@ def _llm_gap_analysis(
     )
 
     try:
-        client = genai.Client(api_key=settings.gemini_api_key)
+        client = gemini_client()
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model=settings.gemini_model,
             contents=prompt,
             config=genai.types.GenerateContentConfig(
                 temperature=0.4,

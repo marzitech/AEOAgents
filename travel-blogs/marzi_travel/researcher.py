@@ -34,6 +34,7 @@ from google import genai
 from google.genai import types as genai_types
 
 from app.config import settings
+from app.services.gemini import gemini_client
 from app.agents.researcher import (
     ResearchDossier,
     SERP_INTENT_INFORMATIONAL,
@@ -187,12 +188,12 @@ def _grounded_research_call(prompt: str) -> dict:
         logger.error("[TravelResearcher] GEMINI_API_KEY not configured")
         return {}
 
-    client = genai.Client(api_key=settings.gemini_api_key)
+    client = gemini_client()
     last_err: Exception | None = None
     for attempt in (1, 2):
         try:
             response = client.models.generate_content(
-                model="gemini-2.5-flash",
+                model=settings.gemini_model,
                 contents=prompt,
                 config=genai_types.GenerateContentConfig(
                     tools=[genai_types.Tool(google_search=genai_types.GoogleSearch())],
@@ -396,14 +397,14 @@ class TravelResearcherAgent:
 
         # Re-implement the call directly here so we keep a handle on the response
         # object (needed for grounding metadata).
-        client = genai.Client(api_key=settings.gemini_api_key)
+        client = gemini_client()
         last_err: Exception | None = None
         research: dict = {}
         grounding_uris: list[str] = []
         for attempt in (1, 2):
             try:
                 response = client.models.generate_content(
-                    model="gemini-2.5-flash",
+                    model=settings.gemini_model,
                     contents=prompt,
                     config=genai_types.GenerateContentConfig(
                         tools=[genai_types.Tool(google_search=genai_types.GoogleSearch())],

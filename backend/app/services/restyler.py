@@ -14,6 +14,7 @@ import re
 from google import genai
 
 from app.config import settings
+from app.services.gemini import gemini_client
 
 logger = logging.getLogger(__name__)
 
@@ -80,9 +81,9 @@ Return ONLY the complete HTML. No markdown fences, no explanation.
 """
 
     try:
-        client = genai.Client(api_key=settings.gemini_api_key)
+        client = gemini_client()
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model=settings.gemini_model,
             contents=f"{prompt}\n\n---HTML TO RESTYLE---\n\n{full_html}",
             config=genai.types.GenerateContentConfig(
                 temperature=0.2,

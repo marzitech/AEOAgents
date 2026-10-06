@@ -26,6 +26,7 @@ from bs4 import BeautifulSoup
 from google import genai
 
 from app.config import settings
+from app.services.gemini import gemini_client
 from app.agents.compiler import CompiledPage
 from app.agents.researcher import _parse_json_lenient
 from marzi_travel import site_config
@@ -350,9 +351,9 @@ def recommend_travel_topics(
 
     prompt = _build_prompt(pages, cat_hist, theme_hist, recent_recs, scraped["trips"], scraped["raw_text"], n)
     try:
-        client = genai.Client(api_key=settings.gemini_api_key)
+        client = gemini_client()
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model=settings.gemini_model,
             contents=prompt,
             config=genai.types.GenerateContentConfig(
                 temperature=0.7,

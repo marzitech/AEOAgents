@@ -3,7 +3,7 @@
 Updates an already-published blog in place using user feedback.
 
 Flow:
-  1. Locate the live HTML file by slug under firebase-hosting/public/
+  1. Locate the live HTML file by slug under site/public/
   2. Parse title, meta description, body HTML, JSON-LD @type, and any existing
      specific_data from the embedded JSON-LD
   3. Send the original content + user comments to Gemini and receive a revised
@@ -29,6 +29,7 @@ from bs4 import BeautifulSoup
 from google import genai
 
 from app.config import settings
+from app.services.gemini import gemini_client
 from app.schemas.content import ContentCategory
 from app.agents.compiler import CompilerAgent, CompiledPage, DEFAULT_OUTPUT_DIR
 from app.agents.writer import WrittenContent
@@ -286,11 +287,11 @@ Return ONLY valid JSON:
     def _call_gemini(self, prompt: str) -> dict:
         if not settings.gemini_api_key:
             raise RuntimeError("[Editor] GEMINI_API_KEY not configured")
-        client = genai.Client(api_key=settings.gemini_api_key)
+        client = gemini_client()
         last_err: Exception | None = None
         for attempt in (1, 2):
             response = client.models.generate_content(
-                model="gemini-2.5-flash",
+                model=settings.gemini_model,
                 contents=prompt,
                 config=genai.types.GenerateContentConfig(
                     temperature=0.4,

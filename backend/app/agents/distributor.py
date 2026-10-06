@@ -4,7 +4,7 @@ Handles post-compilation tasks:
 1. Updates the index.html landing page with links to all published content
 2. Generates sitemap.xml for search engine discovery
 3. Generates robots.txt allowing AI crawlers
-4. Executes firebase deploy --only hosting
+4. Uploads the site to S3 and invalidates CloudFront
 
 Future-proofed with a modular design so social media publishing agents
 (Twitter/X, LinkedIn, etc.) can be plugged in later.
@@ -17,7 +17,6 @@ from __future__ import annotations
 import json
 import logging
 import re
-import subprocess
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from html import escape, unescape
@@ -25,13 +24,10 @@ from pathlib import Path
 
 from app.config import settings
 from app.services.html_builder import build_sitemap, build_robots_txt
+from app.services.s3_deploy import deploy_site
 from app.agents.compiler import CompiledPage, DEFAULT_OUTPUT_DIR
 
 logger = logging.getLogger(__name__)
-
-# Firebase hosting root (contains firebase.json)
-_FIREBASE_ROOT = DEFAULT_OUTPUT_DIR.parent
-
 
 @dataclass
 class DeploymentResult:
@@ -224,7 +220,7 @@ def _build_index_html(pages: list[CompiledPage]) -> str:
     <!-- End Google Tag Manager -->
     <title>{escape(settings.site_name)}</title>
     <meta name="description" content="AEO-optimized content for {escape(settings.organization_name)} — offline events for people above 55 in Bangalore &amp; Mumbai">
-    <meta name="robots" content="index, follow">
+    <meta name="robots" content="noindex, nofollow">
     <link rel="canonical" href="{settings.site_url}/">
     <link rel="sitemap" type="application/xml" href="{settings.site_url}/sitemap.xml">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -259,14 +255,13 @@ def _build_index_html(pages: list[CompiledPage]) -> str:
 class DistributorAgent:
     """Agent 5: Distribution Agent.
 
-    Updates the index, generates SEO files, and deploys to Firebase.
+    Updates the index, generates SEO files, and deploys to S3 + CloudFront.
     Designed to be modular — additional distribution channels (social media,
     newsletters, etc.) can be added as methods.
     """
 
     def __init__(self, output_dir: str | Path | None = None):
         self.output_dir = Path(output_dir) if output_dir else DEFAULT_OUTPUT_DIR
-        self.firebase_root = self.output_dir.parent
 
     def _update_index(self, pages: list[CompiledPage]) -> bool:
         """Regenerate index.html with links to all compiled pages."""
@@ -355,40 +350,13 @@ class DistributorAgent:
                 merged[p.slug] = p
         return sorted(merged.values(), key=lambda p: p.slug)
 
-    def _deploy_firebase(self) -> tuple[bool, str]:
-        """Execute firebase deploy --only hosting.
-
-        Returns (success, output_text).
-        """
-        try:
-            result = subprocess.run(
-                ["firebase", "deploy", "--only", "hosting"],
-                cwd=str(self.firebase_root),
-                capture_output=True,
-                text=True,
-                timeout=120,
-            )
-            output = result.stdout + result.stderr
-            success = result.returncode == 0
-
-            if success:
-                logger.info("[Distributor] Firebase deploy succeeded")
-            else:
-                logger.error(f"[Distributor] Firebase deploy failed: {output}")
-
-            return success, output
-        except FileNotFoundError:
-            msg = "Firebase CLI not found — install with: npm install -g firebase-tools"
-            logger.error(f"[Distributor] {msg}")
-            return False, msg
-        except subprocess.TimeoutExpired:
-            msg = "Firebase deploy timed out after 120s"
-            logger.error(f"[Distributor] {msg}")
-            return False, msg
-        except Exception as e:
-            msg = f"Firebase deploy error: {e}"
-            logger.error(f"[Distributor] {msg}")
-            return False, msg
+    def _deploy(self) -> tuple[bool, str]:
+        """Upload output_dir to S3 and invalidate CloudFront. Returns (success, output_text)."""
+        return deploy_site(
+            self.output_dir,
+            bucket=settings.s3_bucket,
+            distribution_id=settings.cloudfront_distribution_id,
+        )
 
     def run(self, pages: list[CompiledPage], deploy: bool = True) -> DeploymentResult:
         """Execute the full distribution pipeline.
@@ -396,11 +364,11 @@ class DistributorAgent:
         1. Update index.html
         2. Generate sitemap.xml
         3. Generate robots.txt
-        4. Deploy to Firebase (if deploy=True)
+        4. Deploy to S3 + CloudFront (if deploy=True)
 
         Args:
             pages: All compiled pages (including any existing ones to keep in index)
-            deploy: Whether to run firebase deploy (set False for local-only)
+            deploy: Whether to upload to S3 (set False for local-only)
 
         Returns:
             DeploymentResult with status of each step
@@ -438,11 +406,11 @@ class DistributorAgent:
 
         # 5. Deploy
         if deploy:
-            deployed, output = self._deploy_firebase()
+            deployed, output = self._deploy()
             result.deployed = deployed
             result.deploy_output = output
         else:
-            logger.info("[Distributor] Skipping Firebase deploy (deploy=False)")
+            logger.info("[Distributor] Skipping deploy (deploy=False)")
 
         # Build live URLs from the union — the printed summary lists everything live
         result.live_urls = [

@@ -1,9 +1,9 @@
-"""Hero-image generation for travel blogs via Gemini 2.5 Flash Image.
+"""Hero-image generation for travel blogs via a Gemini image model.
 
-Model: gemini-2.5-flash-image ("Nano Banana") — the cheapest current Gemini
-image model (~$0.03/image at the time of writing).
+Model: settings.gemini_image_model (default gemini-3.1-flash-image). Image
+models have no free-tier quota — the API key's project needs billing enabled.
 
-One image per blog, saved to firebase-hosting/public/images/{slug}.png and
+One image per blog, saved to site/public/images/{slug}.png and
 referenced from the article HTML.  Failures are non-fatal: the pipeline
 continues without the image rather than aborting the run.
 """
@@ -20,10 +20,11 @@ from google.genai import types as genai_types
 from PIL import Image
 
 from app.config import settings
+from app.services.gemini import gemini_client
 
 logger = logging.getLogger(__name__)
 
-IMAGE_MODEL = "gemini-2.5-flash-image"
+IMAGE_MODEL = settings.gemini_image_model
 
 # Web-delivery sizing. Gemini returns ~1.5MB PNGs at native resolution; we
 # scale to a hero-friendly width and re-encode as WebP. Typical output is
@@ -100,7 +101,7 @@ def generate_hero_image(
         return None
 
     prompt = _build_image_prompt(topic, title)
-    client = genai.Client(api_key=settings.gemini_api_key)
+    client = gemini_client()
 
     try:
         response = client.models.generate_content(
