@@ -1,0 +1,22 @@
+{
+  "ts": "2026-10-09T11:29:54.064469+00:00",
+  "brand_url": "https://marzi.life",
+  "inventory_size": 8,
+  "recommendations": [
+    {
+      "topic": "How to Find Engaging Dance Events & Socials for Seniors (55+) in Mumbai & Bangalore",
+      "rationale": "This topic fills a 'how-to' gap, highlights the 'dance events' theme which is currently unaddressed, and covers both key cities.",
+      "target_category": "how-to",
+      "expected_intent": "Users searching for senior dance activities, social dance classes, or ways to stay active in Mumbai and Bangalore.",
+      "priority_score": 0.9,
+      "themes_addressed": [
+        "Dance events",
+        "Social dancing",
+        "Active seniors",
+        "Finding events"
+      ],
+      "max_similarity_to_existing": 0.71,
+      "closest_existing_slug": "marzi-find-engaging-upskilling-workshops-for-seniors-in-mumbai-learn-new-skills"
+    }
+  ]
+}
