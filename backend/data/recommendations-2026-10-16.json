@@ -1,0 +1,22 @@
+{
+  "ts": "2026-10-16T09:14:22.513851+00:00",
+  "brand_url": "https://marzi.life",
+  "inventory_size": 9,
+  "recommendations": [
+    {
+      "topic": "The Magic of 20-60: Why Marzi's Group Sizes Create Stronger 55+ Friendships",
+      "rationale": "This topic highlights a unique and powerful differentiator (optimal group size) that contributes directly to Marzi's core value proposition of genuine social connections, an angle not yet covered.",
+      "target_category": "informational",
+      "expected_intent": "Users interested in the psychology of social groups, seeking events designed for meaningful interaction rather than large crowds.",
+      "priority_score": 0.92,
+      "themes_addressed": [
+        "Right group size",
+        "Social connections",
+        "Offline-first",
+        "Age-specific"
+      ],
+      "max_similarity_to_existing": 0.701,
+      "closest_existing_slug": "marzi-find-engaging-dance-events-socials-for-seniors-55-in-mumbai-bangalore"
+    }
+  ]
+}
