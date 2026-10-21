@@ -224,7 +224,7 @@ def _build_index_html(pages: list[CompiledPage]) -> str:
     <!-- End Google Tag Manager -->
     <title>{escape(settings.site_name)}</title>
     <meta name="description" content="AEO-optimized content for {escape(settings.organization_name)} — offline events for people above 55 in Bangalore &amp; Mumbai">
-    <meta name="robots" content="index, follow">
+    <meta name="robots" content="noindex, nofollow">
     <link rel="canonical" href="{settings.site_url}/">
     <link rel="sitemap" type="application/xml" href="{settings.site_url}/sitemap.xml">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
